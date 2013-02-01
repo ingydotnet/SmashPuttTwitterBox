@@ -34,5 +34,9 @@ LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line
 E_PULSE = 0.00005
 E_DELAY = 0.00005
 
+# Priority queue priorities
+PRIORITY_LOW = 10
+PRIORITY_HIGH = 1
+
 # Now get the local settings
 from local_settings import *
