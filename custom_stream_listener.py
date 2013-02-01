@@ -1,5 +1,6 @@
 import tweepy
 import time
+import HTMLParser
 from settings import *
 class CustomStreamListener(tweepy.StreamListener):
 	#----------------------------------------------------------------------
@@ -8,10 +9,11 @@ class CustomStreamListener(tweepy.StreamListener):
 		self.queue = queue
 		self.logger = logger
 		self.logger.debug("Twitter listener created")
+		self.parser = HTMLParser.HTMLParser()
 
 	#----------------------------------------------------------------------
 	def on_status(self, status):
-		self.queue.put((PRIORITY_HIGH, "@" + status.user.screen_name + ":", status.text, True))
+		self.queue.put((PRIORITY_HIGH, "@" + status.user.screen_name + ":", self.parser.unescape(status.text), True))
 
 	#----------------------------------------------------------------------
 	def on_error(self, status_code):
