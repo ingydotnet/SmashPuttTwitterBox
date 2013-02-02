@@ -29,7 +29,7 @@ class Watcher(threading.Thread):
 			
 		try:
 			listener = CustomStreamListener(self.queue, self.logger)
-			stream = tweepy.streaming.Stream(self.auth, listener)
+			stream = tweepy.streaming.Stream(self.auth, listener, secure=True, headers={'User-Agent':'SmashPuttTwitterBox'})
 			self.logger.info("Starting twitter stream")
 			stream.filter(track=track)
 			self.logger.error("Twitter stream closed")

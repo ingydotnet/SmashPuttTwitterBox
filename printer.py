@@ -1,9 +1,8 @@
 import threading
 import time
-import pygame
-from pygame import camera
+import Queue
+from video import Video
 from settings import *
-from textwrap import *
 class Printer(threading.Thread):
 	#----------------------------------------------------------------------
 	def __init__(self, queue, logger, pi):
@@ -12,34 +11,28 @@ class Printer(threading.Thread):
 		self.pi = pi
 		self.logger = logger
 		self.logger.debug("Twitter printer created")
+		self.videoQueue = Queue.PriorityQueue(1)
 
-		# Setup screen
-		pygame.init()
-		self.width = 1024
-		self.height = 768
-		self.screen = pygame.display.set_mode((self.width, self.height))
-		self.font = pygame.font.SysFont("Droid Sans Mono", 32, bold=1)
-
-
-		camera.init()
-		self.c = camera.Camera('/dev/video0', (640,480))
-		self.c.start()
-		self.surface = self.c.get_image()
-		self.bigSurface = None
-
-		self.c.get_image(self.surface)
-		self.bigSurface = pygame.transform.scale(self.surface, (self.width, self.height))
-		self.screen.blit(self.bigSurface, (0,0))
 	#----------------------------------------------------------------------
 	def run(self):
+		video = None
 		while True:
+			# Make sure our printing thread is alive and happy
+			if not video or not video.is_alive():
+				self.logger.info("Starting video thread")
+				video = Video(self.logger, self.videoQueue)
+				video.setDaemon(True)
+				video.start()
+
 			try:
 				# Pull the message from the queue
 				msg = self.queue.get()
+				self.videoQueue.put(msg)
 				priority = msg[0]
 				line1 = msg[1]
 				line2 = msg[2]
 				alert = msg[3]
+
 				if priority == PRIORITY_HIGH:
 					self.logger.info(line1 + " " + line2)
 				
@@ -53,13 +46,6 @@ class Printer(threading.Thread):
 
 				# If we should turn the light on, do it
 				if (alert):
-					line_length = 45
-					wrapped_text = wrap(line1 + ' ' + line2, line_length)
-					for index, line in enumerate(wrapped_text):
-						textSurface = self.font.render(line, 1, pygame.Color(255, 0, 0))
-						self.screen.blit(textSurface, (1,(index * self.font.get_height())+1))
-					pygame.display.update()
-
 					if self.pi:
 						self.logger.debug("Light on...")
 						GPIO.output(LIGHT_PIN, GPIO.HIGH)
@@ -69,17 +55,74 @@ class Printer(threading.Thread):
 					if self.pi:
 						self.logger.debug("Light off")
 						GPIO.output(LIGHT_PIN, GPIO.LOW)
-				# else:
-				# 	time.sleep(5)
-
-				if self.c.query_image():
-					self.c.get_image(self.surface)
-					self.bigSurface = pygame.transform.scale(self.surface, (self.width, self.height))
-				if self.bigSurface != None:
-					self.screen.blit(self.bigSurface, (0,0))
+				else:
+					time.sleep(5)
 
 				# All done!
 				self.queue.task_done()
 			except Exception as e:
 				self.logger.error("Exception in printer: " + str(e))
 
+	def lcd_init():
+		# Initialise display
+		lcd_byte(0x33,LCD_CMD)
+		lcd_byte(0x32,LCD_CMD)
+		lcd_byte(0x28,LCD_CMD)
+		lcd_byte(0x0C,LCD_CMD)	
+		lcd_byte(0x06,LCD_CMD)
+		lcd_byte(0x01,LCD_CMD)	
+
+	def lcd_string(message):
+		# Send string to display
+		message = message.ljust(LCD_WIDTH," ")	
+		for i in range(LCD_WIDTH):
+			lcd_byte(ord(message[i]),LCD_CHR)
+
+	def lcd_byte(bits, mode):
+		# Send byte to data pins
+		# bits = data
+		# mode = True for character
+		#			False for command
+		GPIO.output(LCD_RS, mode) # RS
+
+		# High bits
+		GPIO.output(LCD_D4, False)
+		GPIO.output(LCD_D5, False)
+		GPIO.output(LCD_D6, False)
+		GPIO.output(LCD_D7, False)
+		if bits&0x10==0x10:
+			GPIO.output(LCD_D4, True)
+		if bits&0x20==0x20:
+			GPIO.output(LCD_D5, True)
+		if bits&0x40==0x40:
+			GPIO.output(LCD_D6, True)
+		if bits&0x80==0x80:
+			GPIO.output(LCD_D7, True)
+
+		# Toggle 'Enable' pin
+		time.sleep(E_DELAY)		 
+		GPIO.output(LCD_E, True)	
+		time.sleep(E_PULSE)
+		GPIO.output(LCD_E, False)	 
+		time.sleep(E_DELAY)			 
+
+		# Low bits
+		GPIO.output(LCD_D4, False)
+		GPIO.output(LCD_D5, False)
+		GPIO.output(LCD_D6, False)
+		GPIO.output(LCD_D7, False)
+		if bits&0x01==0x01:
+			GPIO.output(LCD_D4, True)
+		if bits&0x02==0x02:
+			GPIO.output(LCD_D5, True)
+		if bits&0x04==0x04:
+			GPIO.output(LCD_D6, True)
+		if bits&0x08==0x08:
+			GPIO.output(LCD_D7, True)
+
+		# Toggle 'Enable' pin
+		time.sleep(E_DELAY)		 
+		GPIO.output(LCD_E, True)	
+		time.sleep(E_PULSE)
+		GPIO.output(LCD_E, False)	 
+		time.sleep(E_DELAY)		
