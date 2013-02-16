@@ -63,6 +63,7 @@ class Video(threading.Thread):
 					if self.c.query_image():
 						self.c.get_image(self.surface)
 						self.logger.debug( "Captured image")
+						self.surface = pygame.transform.flip(self.surface, True, False)
 						self.bigSurface = pygame.transform.scale(self.surface, (self.width, self.height))
 					if self.bigSurface != None:
 						self.screen.blit(self.bigSurface, (0,0))
