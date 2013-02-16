@@ -4,7 +4,7 @@ from settings import *
 try:
 	import RPi.GPIO as GPIO
 	PI = True
-except:
+except ImportError:
 	PI = False
 
 import logging

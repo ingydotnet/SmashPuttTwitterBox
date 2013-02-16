@@ -3,6 +3,11 @@ import time
 import Queue
 from video import Video
 from settings import *
+try:
+	import RPi.GPIO as GPIO
+	PI = True
+except ImportError:
+	PI = False
 class Printer(threading.Thread):
 	#----------------------------------------------------------------------
 	def __init__(self, queue, logger, pi):
