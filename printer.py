@@ -20,7 +20,7 @@ class Printer(threading.Thread):
 			# Make sure our printing thread is alive and happy
 			if not video or not video.is_alive():
 				self.logger.info("Starting video thread")
-				video = Video(self.logger, self.videoQueue)
+				video = Video(self.logger, self.videoQueue, self.queue)
 				video.setDaemon(True)
 				video.start()
 

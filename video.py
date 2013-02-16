@@ -5,10 +5,11 @@ import os
 from pygame import camera
 from textwrap import *
 class Video(threading.Thread):
-	def __init__(self, logger, queue):
+	def __init__(self, logger, queue, parent_queue):
 		threading.Thread.__init__(self)
 		self.logger = logger
 		self.queue = queue
+		self.parent_queue = parent_queue
 		self.logger.debug("Video created")
 
 		self.text = "Welcome to Smash Putt"
@@ -89,7 +90,7 @@ class Video(threading.Thread):
 						os._exit(0)
 					if event.type == pygame.KEYDOWN and event.key ==pygame.K_t:
 						msg = [1, "This is a test line 1", "message line 2", True]
-						self.queue.put(msg)
+						self.parent_queue.put(msg)
 			except Exception as e:
 				self.logger.error("Exception in video: " + str(e))
 
