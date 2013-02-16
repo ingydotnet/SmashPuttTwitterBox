@@ -13,7 +13,7 @@
 
 do_start () {
 
-	/usr/bin/fbi /etc/splash.png    
+	/usr/bin/fbi /etc/splash.png -a --no-verbose -d /dev/fb0
 	exit 0
 }
 
