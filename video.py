@@ -87,6 +87,9 @@ class Video(threading.Thread):
 						self.logger.info("EXIT")
 						pygame.quit()
 						os._exit(0)
+					if event.type == pygame.KEYDOWN and event.key ==pygame.K_t:
+						msg = [1, "This is a test line 1", "message line 2", True]
+						self.queue.put(msg)
 			except Exception as e:
 				self.logger.error("Exception in video: " + str(e))
 
