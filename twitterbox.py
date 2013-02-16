@@ -21,6 +21,10 @@ def main():
 	# Setup Logging
 	logger = logging.getLogger('twitterbox')
 	hdlr = logging.FileHandler(LOG)
+	formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+	hdlr.setFormatter(formatter)
+	logger.addHandler(hdlr) 
+
 	hdlr = logging.StreamHandler(sys.stdout)
 	formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 	hdlr.setFormatter(formatter)
