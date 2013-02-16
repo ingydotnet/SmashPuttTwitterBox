@@ -1,7 +1,7 @@
 import threading
 import pygame
 import Queue
-import sys
+import os
 from pygame import camera
 from textwrap import *
 class Video(threading.Thread):
@@ -15,25 +15,31 @@ class Video(threading.Thread):
 
 		# Setup screen
 		pygame.init()
+		pygame.mouse.set_visible(False)
 		self.width = 1024
 		self.height = 768
 		self.screen = pygame.display.set_mode((self.width, self.height))
-		self.font = pygame.font.SysFont("Droid Sans Mono", 32, bold=1)
+		font_size = 60
+		font_width = font_size * 0.68956
+		font_width = font_size * 0.7
+		self.font = pygame.font.SysFont("Droid Sans Mono", font_size, bold=1)
+		self.line_length = self.width/font_width
 
 
 		camera.init()
-		self.c = camera.Camera('/dev/video0', (640,480))
+		camera_size = (640,480)
+		self.c = camera.Camera('/dev/video0', camera_size)
 		self.c.start()
-		self.surface = self.c.get_image()
+		self.surface = pygame.Surface(camera_size)
 		self.bigSurface = None
 		self.pause = False
 
-		self.c.get_image(self.surface)
-		self.bigSurface = pygame.transform.scale(self.surface, (self.width, self.height))
-		self.screen.blit(self.bigSurface, (0,0))
-		self.shadowColor = 0
+		self.foregroundColor = pygame.Color(255, 0, 0)
+		self.black = pygame.Color(0, 0, 0)
+		self.shadowShade = 0
 
 	def run(self):
+		new_text = False
 		while True:
 			try:
 				try:
@@ -44,29 +50,30 @@ class Video(threading.Thread):
 					alert = msg[3]
 					self.pause = alert
 					self.text = line1 + ' ' + line2
+					new_text = True
 					self.queue.task_done()
-					self.c.get_image(self.surface)
-					self.bigSurface = pygame.transform.scale(self.surface, (self.width, self.height))
 				except Queue.Empty:
-					self.logger.debug("Video queue empty")
+					False
+					#self.logger.debug("Video queue empty")
 
-				if not self.pause:
+
+				if new_text or not self.pause:
+					new_text = False
 					if self.c.query_image():
 						self.c.get_image(self.surface)
+						self.logger.debug( "Captured image")
 						self.bigSurface = pygame.transform.scale(self.surface, (self.width, self.height))
-				if self.bigSurface != None:
-					self.screen.blit(self.bigSurface, (0,0))
+					if self.bigSurface != None:
+						self.screen.blit(self.bigSurface, (0,0))
 
 				if self.text != None:
-					line_length = 45
-					wrapped_text = wrap(self.text, line_length)
+					wrapped_text = wrap(self.text, self.line_length)
 					for index, line in enumerate(wrapped_text):
-						textSurface = self.font.render(line, True, pygame.Color(255, 0, 0))
+						textSurface = self.font.render(line, True, self.foregroundColor)
+						shadowColor = self.black
 						if self.pause:
-							self.shadowColor = (self.shadowColor + 3) % 255
-							shadowColor = pygame.Color(self.shadowColor, self.shadowColor, self.shadowColor)
-						else:
-							shadowColor = pygame.Color(0, 0, 0)
+							self.shadowShade = (self.shadowShade + 3) % 255
+							shadowColor = pygame.Color(self.shadowShade, self.shadowShade, self.shadowShade)
 						shadow = self.font.render(line, True, shadowColor)
 						pos = (1,index * self.font.get_linesize())
 						shadowOffset = 3
@@ -74,7 +81,12 @@ class Video(threading.Thread):
 						self.screen.blit(textSurface, pos)
 
 				pygame.display.update()
-
+				
+				for event in pygame.event.get():
+					if event.type == pygame.QUIT or event.type == pygame.KEYDOWN and event.key ==pygame.K_q:
+						self.logger.info("EXIT")
+						pygame.quit()
+						os._exit(0)
 			except Exception as e:
 				self.logger.error("Exception in video: " + str(e))
 
