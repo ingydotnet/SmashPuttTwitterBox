@@ -15,7 +15,10 @@ from watcher import Watcher
 from printer import Printer
 import sys
 import traceback
-
+try:
+	DEBUG = bool(int(os.environ['DEBUG']))
+except KeyError
+	DEBUG = False
 
 def main():
 	# Setup Logging

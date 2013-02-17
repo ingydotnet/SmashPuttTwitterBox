@@ -13,6 +13,7 @@ class CustomStreamListener(tweepy.StreamListener):
 
 	#----------------------------------------------------------------------
 	def on_status(self, status):
+		self.logger.debug("Loading status to queue: " + status.text)
 		self.queue.put((PRIORITY_HIGH, "@" + status.user.screen_name + ":", self.parser.unescape(status.text), True))
 
 	#----------------------------------------------------------------------

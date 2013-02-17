@@ -57,6 +57,7 @@ class Printer(threading.Thread):
 
 				# All done!
 				self.queue.task_done()
+				self.logger.debug("Finished queue item. Queue size: " + self.queue.qsize())
 			except Exception as e:
 				self.logger.error("Exception in printer: " + str(e))
 
