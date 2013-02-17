@@ -17,7 +17,7 @@ import sys
 import traceback
 try:
 	DEBUG = bool(int(os.environ['DEBUG']))
-except KeyError
+except KeyError:
 	DEBUG = False
 
 def main():
