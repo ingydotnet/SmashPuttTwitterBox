@@ -15,10 +15,11 @@ from watcher import Watcher
 from printer import Printer
 import sys
 import traceback
+DEBUG = False
 try:
 	DEBUG = bool(int(os.environ['DEBUG']))
 except KeyError:
-	DEBUG = False
+	pass
 
 def main():
 	# Setup Logging
@@ -34,8 +35,10 @@ def main():
 	logger.addHandler(hdlr) 
 	if DEBUG:
 		logger.setLevel(logging.DEBUG)
+		logger.info("DEBUG level logging")
 	else:
 		logger.setLevel(logging.INFO)
+		logger.info("INFO level logging")
 	logger.info("Starting up...")
 
 	if PI:
@@ -86,8 +89,9 @@ def main():
 				for w in track:
 					queue.put((PRIORITY_LOW, "Watching for:", w, False))
 				user_data = watcher.getUserData()
-				for k,v in user_data.iteritems():
-					queue.put((PRIORITY_LOW, k, v, False))
+				if user_data != None:
+					for k,v in user_data.iteritems():
+						queue.put((PRIORITY_LOW, k, v, False))
 		except Exception as e:
 			logger.error("Exception in main thread: " + str(e))
 			traceback.print_tb(sys.exc_info()[2])
