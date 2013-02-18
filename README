@@ -1,5 +1,0 @@
-Smash Putt Twitter Box!
-
-# Required Libraries
-	Tweepy: http://tweepy.github.com
-	GPIO Libraries:  http://pypi.python.org/pypi/RPi.GPIO
