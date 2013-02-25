@@ -77,10 +77,10 @@ def main():
 			if queue.qsize() == 0:
 				for w in track:
 					queue.put((PRIORITY_LOW, "Watching for:", w, False))
-				user_data = watcher.getUserData()
-				if user_data != None:
-					for k,v in user_data.iteritems():
-						queue.put((PRIORITY_LOW, k, v, False))
+				# user_data = watcher.getUserData()
+				# if user_data != None:
+				# 	for k,v in user_data.iteritems():
+				# 		queue.put((PRIORITY_LOW, k, v, False))
 		except Exception as e:
 			logger.error("Exception in main thread: " + str(e))
 			traceback.print_tb(sys.exc_info()[2])
