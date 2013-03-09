@@ -1,7 +1,7 @@
 import tweepy
-import time
 import HTMLParser
-from settings import *
+import settings
+
 class CustomStreamListener(tweepy.StreamListener):
 	#----------------------------------------------------------------------
 	def __init__(self, queue, logger):
@@ -10,17 +10,21 @@ class CustomStreamListener(tweepy.StreamListener):
 		self.logger = logger
 		self.logger.debug("Twitter listener created")
 		self.parser = HTMLParser.HTMLParser()
+		self.rate_limited = False
+		self.status_count = 0
 
 	#----------------------------------------------------------------------
 	def on_status(self, status):
-		self.logger.debug("Loading status to queue: " + status.text)
-		self.queue.put((PRIORITY_HIGH, "@" + status.user.screen_name + ":", self.parser.unescape(status.text), True))
+		self.status_count = self.status_count + 1
+		self.logger.debug("Status(" + str(self.status_count) + "): " + status.text)
+		self.queue.put((settings.PRIORITY_HIGH, "@" + status.user.screen_name + ":", self.parser.unescape(status.text), True))
 
 	#----------------------------------------------------------------------
 	def on_error(self, status_code):
 		if status_code == 420:
-			self.logger.error("Hit the rate limit for twitter... sleeping for a minute")
-			time.sleep(60)
+			self.logger.error("Hit the rate limit for twitter!!!")
+			self.rate_limited = True
+			return False
 		else:
 			self.logger.error("Encountered error with status code: " + str(status_code))
 		return True # Don't kill the stream
