@@ -19,7 +19,7 @@ import settings
 def main():
 	# Setup Logging
 	logger = logging.getLogger('twitterbox')
-	hdlr = logging.FileHandler(LOG)
+	hdlr = logging.FileHandler(settings.LOG)
 	formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 	hdlr.setFormatter(formatter)
 	logger.addHandler(hdlr) 
