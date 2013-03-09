@@ -1,10 +1,10 @@
 # Twitter settings
-consumer_key="your consumer key"
-consumer_secret="your consumer secret"
-access_key = "your acces key"
-access_secret = "your access secret"
-track=["what", "you want", "to", "track"]
-screen_name="yourtwitterid"
+CONSUMER_KEY="your consumer key"
+CONSUMER_SECRET="your consumer secret"
+ACCESS_KEY = "your acces key"
+ACCESS_SECRET = "your access secret"
+TRACK=["what", "you want", "to", "track"]
+SCREEN_NAME="yourtwitterid"
 
 # Log file
 LOG="twitterbox.log"
