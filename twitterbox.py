@@ -1,6 +1,5 @@
 #!/usr/bin/python
 
-from settings import *
 try:
 	import RPi.GPIO as GPIO
 	PI = True
@@ -15,6 +14,7 @@ from watcher import Watcher
 from printer import Printer
 import sys
 import traceback
+import settings
 
 def main():
 	# Setup Logging
@@ -44,8 +44,8 @@ def main():
 		GPIO.setmode(GPIO.BCM)	     # Use BCM GPIO numbers
 
 		# Setup the alert light
-		GPIO.setup(LIGHT_PIN, GPIO.OUT) 
-		GPIO.output(LIGHT_PIN, GPIO.LOW)
+		GPIO.setup(settings.LIGHT_PIN, GPIO.OUT) 
+		GPIO.output(settings.LIGHT_PIN, GPIO.LOW)
 
 
 	# The queue is where messages go to be displayed
@@ -75,8 +75,8 @@ def main():
 
 			# Throw some info in the queue if it's getting low
 			if queue.qsize() == 0:
-				for w in track:
-					queue.put((PRIORITY_LOW, "Watching for:", w, False))
+				for w in settings.TRACK:
+					queue.put((settings.PRIORITY_LOW, "Watching for:", w, False))
 				# user_data = watcher.getUserData()
 				# if user_data != None:
 				# 	for k,v in user_data.iteritems():
