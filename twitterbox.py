@@ -28,7 +28,7 @@ def main():
 	formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
 	hdlr.setFormatter(formatter)
 	logger.addHandler(hdlr) 
-	if DEBUG:
+	if settings.DEBUG:
 		logger.setLevel(logging.DEBUG)
 		logger.info("DEBUG level logging")
 	else:
