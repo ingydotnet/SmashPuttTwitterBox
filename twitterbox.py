@@ -77,7 +77,7 @@ def main():
 			if queue.qsize() == 0:
 				messages = open(settings.MSG_FILE, 'r')
 				for msg in messages:
-					queue.put((settings.PRIORITY_LOW, "Watching for:", w, False))
+					queue.put((settings.PRIORITY_LOW, msg, "", False))
 				messages.close()
 				
 				# Switching to using the message file instead of this generated msg
