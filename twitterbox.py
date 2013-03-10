@@ -75,8 +75,17 @@ def main():
 
 			# Throw some info in the queue if it's getting low
 			if queue.qsize() == 0:
-				for w in settings.TRACK:
+				messages = open(settings.MSG_FILE, 'r')
+				for msg in messages:
 					queue.put((settings.PRIORITY_LOW, "Watching for:", w, False))
+				messages.close()
+				
+				# Switching to using the message file instead of this generated msg
+				#for w in settings.TRACK:
+				#	queue.put((settings.PRIORITY_LOW, "Watching for:", w, False))
+				
+				# We are not tracking the number of followers for this event
+				# This frees up an extra twitter connection to avoid rate limiting --JLS
 				# user_data = watcher.getUserData()
 				# if user_data != None:
 				# 	for k,v in user_data.iteritems():

@@ -10,6 +10,9 @@ SCREEN_NAME="yourtwitterid"
 LOG="twitterbox.log"
 DEBUG=False
 
+# Messages to display
+MSG_FILE="messages.txt"
+
 # Where did you plug in the light?
 LIGHT_PIN = 4
 LIGHT_DELAY = 10
