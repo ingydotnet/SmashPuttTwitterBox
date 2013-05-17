@@ -10,11 +10,6 @@ setup(
     author_email='aocole@aocole.net',
     url='https://github.com/aocole/SmashPuttTwitterBox',
     packages=[
-        'SmashPuttTwitterBot',
-        'SmashPuttTwitterBot.custom_stream_listener',
-        'SmashPuttTwitterBot.printer',
-        'SmashPuttTwitterBot.settings',
-        'SmashPuttTwitterBot.video',
-        'SmashPuttTwitterBot.watcher',
+        'SmashPuttTwitterBox',
     ],
 )
