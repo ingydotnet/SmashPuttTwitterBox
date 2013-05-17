@@ -9,7 +9,20 @@ setup(
     author='Andrew Cole',
     author_email='aocole@aocole.net',
     url='https://github.com/aocole/SmashPuttTwitterBox',
+# License: UNKNOWN
+# Description: UNKNOWN
+# Platform: UNKNOWN
     packages=[
         'SmashPuttTwitterBox',
     ],
+    scripts=[
+        'scripts/smashputttwitterbox',
+    ],
+#     package_dir={
+#         'SmashPuttTwitterBox': '.',
+#     },
+    package_data={
+        'SmashPuttTwitterBox': ['data/*'],
+    },
+
 )
