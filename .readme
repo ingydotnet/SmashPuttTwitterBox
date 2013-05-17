@@ -1,0 +1,12 @@
+## Dev notes:
+
+I've been testing package building with this command:
+
+    RM dist/ SmashPuttTwitterBox-0.0.1/ MANIFEST ; python setup.py sdist ; tar xzf dist/SmashPuttTwitterBox-0.0.1.tar.gz ; find SmashPuttTwitterBox-0.0.1/ ; cat SmashPuttTwitterBox-0.0.1/PKG-INFO
+
+Useful commands:
+
+    python setup.py --help-commands
+
+    python setup.py sdist
+    pip install dist/SmashPuttTwitterBox-0.0.1.tar.gz
